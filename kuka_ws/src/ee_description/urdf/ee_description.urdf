@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="ee_description">
+  <link
+    name="ee_base_link">
+    <inertial>
+      <origin
+        xyz="-0.0315825451460077 0.0884468369126826 0.0724994852518057"
+        rpy="0 0 0" />
+      <mass
+        value="1.97691631503348" />
+      <inertia
+        ixx="0.0177175290942923"
+        ixy="-1.55927242375705E-05"
+        ixz="-1.61455385878767E-06"
+        iyy="0.0185480963265998"
+        iyz="-7.6495979640586E-07"
+        izz="0.0194249721655364" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ee_description/meshes/ee_base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.529411764705882 0.549019607843137 0.549019607843137 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ee_description/meshes/ee_base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="ee">
+    <inertial>
+      <origin
+        xyz="-0.01376744252958 0.0105185069538265 -0.042821327834385"
+        rpy="0 0 0" />
+      <mass
+        value="14.8246047798321" />
+      <inertia
+        ixx="0.169687053802028"
+        ixy="-0.00456436315901842"
+        ixz="3.71519809177454E-07"
+        iyy="0.379644529251002"
+        iyz="-1.93054109823794E-07"
+        izz="0.547057358639197" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ee_description/meshes/ee.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ee_description/meshes/ee.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_ee"
+    type="fixed">
+    <origin
+      xyz="0 0 0.316"
+      rpy="0 0 0" />
+    <parent
+      link="ee_base_link" />
+    <child
+      link="ee" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

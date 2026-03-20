@@ -1,0 +1,22 @@
+{
+    
+    "python.analysis.extraPaths": [
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "${workspaceFolder}/install/kuka_ws/lib/python3.10/site-packages"
+    ],
+    
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    
+    "search.exclude": {
+        "**/build": true,
+        "**/install": true,
+        "**/log": true,
+        "**/.vscode": true
+    },
+    
+    "files.watcherExclude": {
+        "**/build/**": true,
+        "**/install/**": true,
+        "**/log/**": true
+    }
+}
