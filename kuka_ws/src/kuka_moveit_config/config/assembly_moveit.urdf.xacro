@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="assembly_moveit">
+    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+
+    <!-- Import assembly_moveit urdf file -->
+    <xacro:include filename="$(find kuka_description)/urdf/assembly_moveit.xacro" />
+
+    <!-- Import control_xacro -->
+    <xacro:include filename="assembly_moveit.ros2_control.xacro" />
+
+
+    <xacro:assembly_moveit_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
+
+</robot>

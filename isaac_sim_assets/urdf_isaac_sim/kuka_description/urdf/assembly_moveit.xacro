@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="assembly_moveit" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find kuka_description)/urdf/kuka_description.urdf" />
+    <xacro:include filename="$(find env_description)/urdf/env_description.urdf" />
+    <xacro:include filename="$(find ee_description)/urdf/ee_description.urdf" />
+
+
+    <link name="world" />
+    <joint name="world_to_env" type="fixed">
+        <parent link="world" />
+        <child link="env_base_link" />
+        <origin xyz="0 0 1.2" rpy="-1.5707963268 0 3.1415926535" /> 
+    </joint>
+
+    <joint name="env_to_kuka_joint" type="fixed">
+        <parent link="env_base_link" />
+        <child link="base_link" />
+        <!-- <origin xyz="0 0 0" rpy="1.5707963268 1.5707963268 0.78539816338" /> -->
+        <origin xyz="0 0 0" rpy="1.5707963268 2.3561944901 0" />
+    </joint>
+
+    <joint name="kuka_to_ee_joint" type="fixed">
+        <parent link="link_6" />
+        <child link="ee_base_link" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+</robot>

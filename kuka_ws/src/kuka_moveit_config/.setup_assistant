@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: kuka_description
+    relative_path: urdf/assembly_moveit.xacro
+  srdf:
+    relative_path: config/assembly_moveit.srdf
+  package_settings:
+    author_name: Yu Junjie
+    author_email: 1282188778@qq.com
+    generated_timestamp: 1774242537
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
