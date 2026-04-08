@@ -14,7 +14,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/visual/base_link.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/visual/base_link.stl"/>
       </geometry>
       <material name="">
         <color rgba="0.054901960784313725 0.054901960784313725 0.06274509803921569 1.0"/>
@@ -23,7 +23,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/collision/base_link.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/collision/base_link.stl"/>
       </geometry>
     </collision>
   </link>
@@ -31,7 +31,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 -0.557"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/visual/link_1.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/visual/link_1.stl"/>
       </geometry>
       <material name="">
         <color rgba="0.9647058823529412 0.47058823529411764 0.1568627450980392 1.0"/>
@@ -40,7 +40,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 -0.557"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/collision/link_1.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/collision/link_1.stl"/>
       </geometry>
     </collision>
   </link>
@@ -48,7 +48,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="-0.190 0 -0.557"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/visual/link_2.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/visual/link_2.stl"/>
       </geometry>
       <material name="">
         <color rgba="0.9647058823529412 0.47058823529411764 0.1568627450980392 1.0"/>
@@ -57,7 +57,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="-0.190 0 -0.557"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/collision/link_2.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/collision/link_2.stl"/>
       </geometry>
     </collision>
   </link>
@@ -65,7 +65,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="-0.190 0 -1.647"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/visual/link_3.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/visual/link_3.stl"/>
       </geometry>
       <material name="">
         <color rgba="0.9647058823529412 0.47058823529411764 0.1568627450980392 1.0"/>
@@ -74,7 +74,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="-0.190 0 -1.647"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/collision/link_3.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/collision/link_3.stl"/>
       </geometry>
     </collision>
   </link>
@@ -82,7 +82,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="-0.190 0 -1.797"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/visual/link_4.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/visual/link_4.stl"/>
       </geometry>
       <material name="">
         <color rgba="0.9647058823529412 0.47058823529411764 0.1568627450980392 1.0"/>
@@ -91,7 +91,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="-0.190 0 -1.797"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/collision/link_4.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/collision/link_4.stl"/>
       </geometry>
     </collision>
   </link>
@@ -99,7 +99,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="-1.401 0 -1.797"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/visual/link_5.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/visual/link_5.stl"/>
       </geometry>
       <material name="">
         <color rgba="0.9647058823529412 0.47058823529411764 0.1568627450980392 1.0"/>
@@ -108,7 +108,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="-1.401 0 -1.797"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/collision/link_5.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/collision/link_5.stl"/>
       </geometry>
     </collision>
   </link>
@@ -116,7 +116,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/visual/link_6.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/visual/link_6.stl"/>
       </geometry>
       <material name="">
         <color rgba="0.5058823529411764 0.47058823529411764 0.38823529411764707 1.0"/>
@@ -125,7 +125,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://kuka_description/meshes/collision/link_6.stl"/>
+        <mesh filename="/home/one/palletizing_project/isaac_sim_assets/urdf_isaac_sim/kuka_description/meshes/collision/link_6.stl"/>
       </geometry>
     </collision>
   </link>
