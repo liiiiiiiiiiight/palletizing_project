@@ -1,0 +1,18 @@
+# planning.yaml
+
+# 规划管道 (Planning Pipelines)
+planning_pipelines:
+  pipeline_names: ["ompl", "pilz_industrial_motion_planner"]
+
+# OMPL 规划器的配置
+ompl:
+  planning_plugins: ["ompl_interface/OMPLPlanner"]
+  request_adapters: >-
+    default_planner_request_adapters/AddTimeParameterization
+  start_state_max_bounds_error: 0.1
+
+# PILZ 工业运动规划器的配置
+pilz_industrial_motion_planner:
+  planning_plugins: ["pilz_industrial_motion_planner/PILZIndustrialMotionPlanner"]
+  request_adapters: >-
+    default_planner_request_adapters/AddTimeParameterization
