@@ -1,0 +1,17 @@
+# 目标 (Goal)
+geometry_msgs/Pose start_pose     # 起点：目标箱子被抓取时 TCP 的姿态
+geometry_msgs/Pose end_pose       # 终点：目标箱子被放置时 TCP 的姿态
+geometry_msgs/Vector3 box_size    # 箱子尺寸 (x, y, z)    非必要？？？
+string box_id                     # 箱子ID
+float64 box_mass                  # 箱子质量 (kg)
+float64 height_limit              # 当前1、2两区垛形z方向最高高度
+
+---
+# 结果 (Result)
+bool success
+string message
+
+---
+# 反馈 (Feedback)
+string phase_description          # 当前执行阶段描述
+float32 progress_percentage       # 进度百分比
