@@ -58,7 +58,8 @@ private:
         }
 
         // --- 基于 box_creator 中的参数生成当前箱子的起止点 ---
-        double box_x = 0.3, box_y = 0.2, box_z = 0.2; 
+        // [修改] 将箱子 X 方向的尺寸从 0.3 改为 0.25
+        double box_x = 0.25, box_y = 0.2, box_z = 0.2; 
         double max_x = 1.75;
         double max_y = -0.4;
         double base_z = 0.507;
@@ -68,7 +69,8 @@ private:
         double sy = max_y - current_j_ * (box_y + gap);
         double sz = base_z + box_z/2 + 0.005;
 
-        double ex = sx - 1.48;
+        // [修改] 将终点 X 坐标减小 100mm (0.1m)，原为 sx - 1.48，现改为 sx - 1.58
+        double ex = sx - 1.58; 
         double ey = sy + 2.5;
         double ez = sz;
 
@@ -98,7 +100,8 @@ private:
         goal_msg.end_pose.orientation.y = 1.0;
         goal_msg.end_pose.orientation.x = 0; goal_msg.end_pose.orientation.z = 0; goal_msg.end_pose.orientation.w = 0;
 
-        goal_msg.box_size.x = 0.3; goal_msg.box_size.y = 0.2; goal_msg.box_size.z = 0.2;
+        // [修改] 动作目标(Goal)中的箱子大小属性也需要同步修改，X 尺寸改为 0.25
+        goal_msg.box_size.x = 0.25; goal_msg.box_size.y = 0.2; goal_msg.box_size.z = 0.2;
         goal_msg.box_mass = mass; goal_msg.height_limit = h_limit;
 
         auto send_goal_options = rclcpp_action::Client<PalletTask>::SendGoalOptions();

@@ -89,13 +89,13 @@ private:
     const std::string PLANNING_GROUP = "arm";
     const int BLEND_RADIUS_POINTS = 5; 
     std::atomic<bool> system_ready_{false}; 
-
-    // === 新增修复：引入物理执行状态标志位 ===
     std::atomic<bool> is_executing_{false};
 
+    // 轨迹结构体：保持原有的分段规划结果
     struct ExecutionTask {
         moveit_msgs::msg::RobotTrajectory approach_traj;
-        moveit_msgs::msg::RobotTrajectory place_traj;
+        moveit_msgs::msg::RobotTrajectory transit_traj;   // 快速转移 (lift -> hover_place)
+        moveit_msgs::msg::RobotTrajectory descend_traj;   // 缓慢下降 (hover_place -> place)
         moveit_msgs::msg::RobotTrajectory retract_traj; 
         std::shared_ptr<GoalHandlePalletTask> goal_handle;
     };
@@ -177,13 +177,10 @@ private:
     void handle_accepted(const std::shared_ptr<GoalHandlePalletTask> goal_handle) {
         std::thread{ [this, goal_handle]() {
             std::lock_guard<std::mutex> plan_lock(planning_mutex_);
-            
             const auto goal = goal_handle->get_goal();
             
             {
                 std::lock_guard<std::mutex> lock(queue_mutex_);
-                // === 新增修复：必须加上 !is_executing_ ===
-                // 只有既没有排队任务，物理机械臂也处于完全停止状态时，才去同步物理基准
                 if (task_queue_.empty() && !is_executing_ && system_ready_) {
                     auto current_state = move_group_->getCurrentState(2.0);
                     if (current_state) *virtual_future_state_ = *current_state;
@@ -201,16 +198,22 @@ private:
             lift_pose.position.z = safe_transit_z;
             geometry_msgs::msg::Pose hover_place_pose = goal->end_pose; 
             hover_place_pose.position.z = safe_transit_z;
+            
             geometry_msgs::msg::Pose place_pose = goal->end_pose;
+            place_pose.position.z += 0.1; // 增加 100mm 依靠重力放置
 
             geometry_msgs::msg::Pose retract_pose = goal->end_pose;
             retract_pose.position.z = safe_transit_z;
 
-            moveit_msgs::msg::RobotTrajectory phase1_msg, phase3_msg, phase4_msg;
+            // 分别规划各段轨迹
+            moveit_msgs::msg::RobotTrajectory phase1_msg, phase3_transit_msg, phase3_descend_msg, phase4_msg;
             
             bool plan_success = plan_and_blend_approach(virtual_future_state_, hover_pick_pose, pick_pose, phase1_msg);
             if (plan_success) {
-                plan_success = plan_and_blend_place(virtual_future_state_, lift_pose, hover_place_pose, place_pose, phase3_msg);
+                plan_success = plan_and_blend_transit(virtual_future_state_, lift_pose, hover_place_pose, phase3_transit_msg);
+            }
+            if (plan_success) {
+                plan_success = plan_slow_descend(virtual_future_state_, place_pose, phase3_descend_msg);
             }
             if (plan_success) {
                 plan_success = plan_retract(virtual_future_state_, retract_pose, phase4_msg);
@@ -218,7 +221,7 @@ private:
 
             if (plan_success) {
                 std::lock_guard<std::mutex> lock(queue_mutex_);
-                task_queue_.push({phase1_msg, phase3_msg, phase4_msg, goal_handle});
+                task_queue_.push({phase1_msg, phase3_transit_msg, phase3_descend_msg, phase4_msg, goal_handle});
                 queue_cv_.notify_one(); 
                 RCLCPP_INFO(this->get_logger(), ">>> 后台管道规划完成并入队 (箱子: %s) <<<", goal->box_id.c_str());
             } else {
@@ -230,6 +233,44 @@ private:
         }}.detach();
     }
 
+    // 将两段轨迹拼接为一条连续轨迹（时间戳连续）
+    // 将两段轨迹拼接为一条连续轨迹（自动处理时间戳严格递增）
+bool concatenate_trajectories(const moveit_msgs::msg::RobotTrajectory& traj1,
+                              const moveit_msgs::msg::RobotTrajectory& traj2,
+                              moveit_msgs::msg::RobotTrajectory& combined) {
+    if (traj1.joint_trajectory.points.empty() || traj2.joint_trajectory.points.empty())
+        return false;
+
+    combined = traj1;
+
+    // 获取第一段轨迹最后一个点的时间（秒）
+    double last_time = combined.joint_trajectory.points.back().time_from_start.sec +
+                       combined.joint_trajectory.points.back().time_from_start.nanosec * 1e-9;
+
+    // 拼接第二段轨迹，跳过第一个点（避免时间重复）
+    for (size_t i = 1; i < traj2.joint_trajectory.points.size(); ++i) {
+        auto new_pt = traj2.joint_trajectory.points[i];
+        double pt_time = new_pt.time_from_start.sec + new_pt.time_from_start.nanosec * 1e-9;
+        double new_time = last_time + pt_time;
+
+        // 防御性检查：确保时间严格大于前一个点
+        if (combined.joint_trajectory.points.size() > 0) {
+            double prev_time = combined.joint_trajectory.points.back().time_from_start.sec +
+                               combined.joint_trajectory.points.back().time_from_start.nanosec * 1e-9;
+            if (new_time <= prev_time) {
+                new_time = prev_time + 1e-9; // 增加 1 纳秒，确保递增
+            }
+        }
+
+        new_pt.time_from_start.sec = static_cast<int32_t>(new_time);
+        new_pt.time_from_start.nanosec = static_cast<uint32_t>((new_time - static_cast<int32_t>(new_time)) * 1e9);
+        combined.joint_trajectory.points.push_back(new_pt);
+    }
+
+    combined.joint_trajectory.header.stamp = traj1.joint_trajectory.header.stamp;
+    return true;
+}
+
     void execution_worker() {
         while (rclcpp::ok()) {
             ExecutionTask current_task;
@@ -240,15 +281,13 @@ private:
 
                 current_task = task_queue_.front();
                 task_queue_.pop();
-                
-                // === 新增修复：出队后立即将执行标志位置 true，防止后续任务覆盖未来状态 ===
                 is_executing_ = true; 
             }
 
             const auto goal = current_task.goal_handle->get_goal();
             auto feedback = std::make_shared<PalletTask::Feedback>();
 
-            // --------- 执行阶段 1 ---------
+            // --------- 执行阶段 1 (接近并抓取) ---------
             feedback->phase_description = "接近并抓取: " + goal->box_id;
             current_task.goal_handle->publish_feedback(feedback);
             
@@ -268,27 +307,40 @@ private:
             if (!goal->box_id.empty()) move_group_->attachObject(goal->box_id, "ee");
             std::this_thread::sleep_for(500ms); 
 
-            // --------- 执行阶段 3 ---------
+            // --------- 执行阶段 3 (合并后的转移+下降) ---------
             feedback->phase_description = "转移并放置: " + goal->box_id;
             current_task.goal_handle->publish_feedback(feedback);
             
+            // 【核心修改】将快速转移轨迹和缓慢下降轨迹拼接为一条连续轨迹
+            moveit_msgs::msg::RobotTrajectory combined_place_traj;
+            if (!concatenate_trajectories(current_task.transit_traj, current_task.descend_traj, combined_place_traj)) {
+                RCLCPP_ERROR(this->get_logger(), "轨迹拼接失败，任务中止！");
+                auto result = std::make_shared<PalletTask::Result>();
+                result->success = false;
+                result->message = "轨迹拼接错误";
+                current_task.goal_handle->abort(result);
+                is_executing_ = false;
+                continue;
+            }
+
             moveit::planning_interface::MoveGroupInterface::Plan plan3;
-            plan3.trajectory_ = current_task.place_traj;
+            plan3.trajectory_ = combined_place_traj;
             
             while (rclcpp::ok() && !stop_execution_) {
-                if (execute_with_alignment(plan3, "Phase3_Place")) break;
+                if (execute_with_alignment(plan3, "Phase3_PlaceCombined")) break;
                 RCLCPP_WARN(this->get_logger(), "放置轨迹执行失败，2秒后持续重试...");
                 std::this_thread::sleep_for(2000ms);
             }
 
-            wait_for_z_arrival(goal->end_pose.position.z);
+            // 等待到达放置高度
+            wait_for_z_arrival(goal->end_pose.position.z + 0.1);
             std::this_thread::sleep_for(400ms);
 
-            set_suction(false);
+            set_suction(false); 
             if (!goal->box_id.empty()) move_group_->detachObject(goal->box_id);
             std::this_thread::sleep_for(500ms); 
 
-            // --------- 执行阶段 4 ---------
+            // --------- 执行阶段 4 (回退) ---------
             feedback->phase_description = "抬升回退: " + goal->box_id;
             current_task.goal_handle->publish_feedback(feedback);
             
@@ -310,7 +362,6 @@ private:
             result->message = "任务执行成功: " + goal->box_id;
             current_task.goal_handle->succeed(result);
 
-            // === 新增修复：物理动作全部完成，清除执行标志 ===
             {
                 std::lock_guard<std::mutex> lock(queue_mutex_);
                 is_executing_ = false; 
@@ -318,7 +369,6 @@ private:
         }
     }
 
-    // 后续规划算法与上一版代码保持一致，已省略重复部分...
     void set_suction(bool state) {
         std_msgs::msg::Bool msg;
         msg.data = state;
@@ -395,7 +445,7 @@ private:
                     {plan_descend.trajectory_, BLEND_RADIUS_POINTS, 0}
                 };
 
-                if (blend_and_retime_trajectories(trajs_to_blend, *state, 0.9, 0.9, out_traj)) {
+                if (blend_and_retime_trajectories(trajs_to_blend, *state, 1.0, 1.0, out_traj)) {
                     *state = *working_state; 
                     return true;
                 }
@@ -406,22 +456,20 @@ private:
         return false; 
     }
 
-    bool plan_and_blend_place(std::shared_ptr<moveit::core::RobotState>& state, geometry_msgs::msg::Pose lift, geometry_msgs::msg::Pose hover, geometry_msgs::msg::Pose place, moveit_msgs::msg::RobotTrajectory& out_traj) {
+    // 规划快速转移段（抬起+平移），全速
+    bool plan_and_blend_transit(std::shared_ptr<moveit::core::RobotState>& state, geometry_msgs::msg::Pose lift, geometry_msgs::msg::Pose hover, moveit_msgs::msg::RobotTrajectory& out_traj) {
         while (rclcpp::ok() && !stop_execution_) {
             auto working_state = std::make_shared<moveit::core::RobotState>(*state);
-            
-            moveit::planning_interface::MoveGroupInterface::Plan plan_lift, plan_transit, plan_place;
+            moveit::planning_interface::MoveGroupInterface::Plan plan_lift, plan_transit;
             bool success = true;
 
             success &= plan_pilz_sim(working_state, lift, plan_lift);
             if (success) success &= plan_pilz_sim(working_state, hover, plan_transit);
-            if (success) success &= plan_pilz_sim(working_state, place, plan_place);
 
             if (success) {
                 std::vector<std::tuple<moveit_msgs::msg::RobotTrajectory, int, int>> trajs_to_blend = {
                     {plan_lift.trajectory_, 0, BLEND_RADIUS_POINTS},
-                    {plan_transit.trajectory_, BLEND_RADIUS_POINTS, BLEND_RADIUS_POINTS},
-                    {plan_place.trajectory_, BLEND_RADIUS_POINTS, 0}
+                    {plan_transit.trajectory_, BLEND_RADIUS_POINTS, 0}
                 };
 
                 if (blend_and_retime_trajectories(trajs_to_blend, *state, 1.0, 1.0, out_traj)) {
@@ -429,7 +477,31 @@ private:
                     return true;
                 }
             }
-            RCLCPP_WARN(this->get_logger(), "放置轨迹规划失败，正在重试...");
+            RCLCPP_WARN(this->get_logger(), "转移轨迹规划失败，正在重试...");
+            std::this_thread::sleep_for(1000ms);
+        }
+        return false;
+    }
+
+    // 规划缓慢下降段，速度缩放因子 0.3
+    bool plan_slow_descend(std::shared_ptr<moveit::core::RobotState>& state, geometry_msgs::msg::Pose place, moveit_msgs::msg::RobotTrajectory& out_traj) {
+        while (rclcpp::ok() && !stop_execution_) {
+            auto working_state = std::make_shared<moveit::core::RobotState>(*state);
+            moveit::planning_interface::MoveGroupInterface::Plan plan;
+
+            if (plan_pilz_sim(working_state, place, plan)) {
+                robot_trajectory::RobotTrajectory rt(move_group_->getRobotModel(), PLANNING_GROUP);
+                rt.setRobotTrajectoryMsg(*state, plan.trajectory_);
+                trajectory_processing::TimeOptimalTrajectoryGeneration totg;
+                
+                // 降速 30%
+                if (totg.computeTimeStamps(rt, 0.3, 0.3)) {
+                    rt.getRobotTrajectoryMsg(out_traj);
+                    *state = *working_state;
+                    return true;
+                }
+            }
+            RCLCPP_WARN(this->get_logger(), "缓慢下降轨迹规划失败，正在重试...");
             std::this_thread::sleep_for(1000ms);
         }
         return false;

@@ -47,7 +47,8 @@ private:
         scene_msg.is_diff = true; // 差异更新
 
         // --- 1. 创建 3x5 的箱子阵列 ---
-        std::vector<double> box_size = {0.3, 0.2, 0.2}; 
+        // [修改] 将箱子 X 方向尺寸从 0.3 改为 0.25，与下发节点保持一致
+        std::vector<double> box_size = {0.25, 0.2, 0.1}; 
 
         int num_x = 3; 
         int num_y = 5; 
