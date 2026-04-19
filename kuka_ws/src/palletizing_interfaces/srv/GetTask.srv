@@ -1,0 +1,31 @@
+# Request: C++ 问 Python 要哪个订单的哪个箱子
+int32 order_id
+int32 box_index
+
+---
+# Response: Python 告诉 C++ 所有必要的信息
+bool success
+int32 station_id      # 1 或 2
+float64 box_len
+float64 box_wid
+float64 box_hei
+int32 case_in_stock   # 总数
+int32 target_qty      # 该订单需要搬运的目标数量
+
+# 起点坐标 (Pick) - 由算法生成
+float64 pick_x
+float64 pick_y
+float64 pick_z
+float64 pick_qw
+float64 pick_qx
+float64 pick_qy
+float64 pick_qz
+
+# 终点坐标 (Place) - 从 JSON 读取
+float64 place_x
+float64 place_y
+float64 place_z
+float64 place_qw
+float64 place_qx
+float64 place_qy
+float64 place_qz

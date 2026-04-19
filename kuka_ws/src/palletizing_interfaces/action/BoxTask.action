@@ -1,0 +1,40 @@
+# Request (Goal) 
+
+int32 command_type       # 0 = 搬运单个箱子, 1 = 生成新垛型, 2 = 清空旧垛型
+int32 target_station     # 目标工位：1 代表 1处，2 代表 2处 
+# ==========================================
+# 当 command_type == 0 (搬运任务) 时，读取以下数据
+# ==========================================
+int32 box_id             # 箱子编号
+
+float64 pick_x           # 抓取点 X
+float64 pick_y           # 抓取点 Y
+float64 pick_z           # 抓取点 Z
+float64 pick_qw          # 抓取姿态 W
+float64 pick_qx          # 抓取姿态 X
+float64 pick_qy          # 抓取姿态 Y
+float64 pick_qz          # 抓取姿态 Z
+
+float64 place_x          # 放置点 X
+float64 place_y          # 放置点 Y
+float64 place_z          # 放置点 Z
+float64 place_qw         # 放置姿态 W
+float64 place_qx         # 放置姿态 X
+float64 place_qy         # 放置姿态 Y
+float64 place_qz         # 放置姿态 Z
+
+# ==========================================
+# 当 command_type == 1 (生成新垛型任务) 时，读取以下数据
+# ==========================================
+float64 box_length       # 箱子长度 (米)
+float64 box_width        # 箱子宽度 (米)
+float64 box_height       # 箱子高度 (米)
+int32 case_in_stock      # 这个垛型总共要生成多少个箱子
+
+---
+# Result - 开发者 B 执行完后回传给 A 的结果
+bool success             # 动作是否成功完成
+string message           # 附加信息 (比如报错原因)
+---
+# Feedback 
+string current_state

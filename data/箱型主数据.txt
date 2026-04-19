@@ -1,0 +1,53 @@
+1：
+
+{"task_item": [{"sku_info": [{"prt_num": "80841013", "type": "box", "length": 326.0, "width": 293.0, "height": 194.0, "weight": 6.05, "case_per_layer": 11, "case_in_stock": 14}], "target_qty": 8}]}
+
+
+2：
+
+{"task_item": [{"sku_info": [{"prt_num": "80853438", "type": "box", "length": 337.0, "width": 191.0, "height": 170.0, "weight": 5.138, "case_per_layer": 15, "case_in_stock": 95}], "target_qty": 10}]}
+
+
+3：
+
+{"task_item": [{"sku_info": [{"prt_num": "80803697", "type": "box", "length": 326.0, "width": 293.0, "height": 194.0, "weight": 6.05, "case_per_layer": 11, "case_in_stock": 29}], "target_qty": 3}]}
+
+
+4：
+
+{"task_item": [{"sku_info": [{"prt_num": "80804704", "type": "box", "length": 174.0, "width": 167.0, "height": 179.0, "weight": 1.487, "case_per_layer": 34, "case_in_stock": 41}], "target_qty": 26}]}
+
+
+5：
+
+{"task_item": [{"sku_info": [{"prt_num": "80859247", "type": "box", "length": 441.0, "width": 258.0, "height": 227.0, "weight": 12.728, "case_per_layer": 9, "case_in_stock": 36}], "target_qty": 10}]}
+
+
+6：
+
+{"task_item": [{"sku_info": [{"prt_num": "80815647", "type": "box", "length": 339.0, "width": 162.0, "height": 249.0, "weight": 6.27, "case_per_layer": 17, "case_in_stock": 30}], "target_qty": 5}]}
+
+
+7：
+
+{"task_item": [{"sku_info": [{"prt_num": "80798406", "type": "box", "length": 480.0, "width": 190.0, "height": 360.0, "weight": 11.334, "case_per_layer": 12, "case_in_stock": 25}], "target_qty": 2}]}
+
+
+8：
+
+{"task_item": [{"sku_info": [{"prt_num": "80763232", "type": "box", "length": 337.0, "width": 293.0, "height": 373.0, "weight": 13.518, "case_per_layer": 11, "case_in_stock": 38}], "target_qty": 2}]}
+
+
+9：
+
+{"task_item": [{"sku_info": [{"prt_num": "80812162", "type": "box", "length": 274.0, "width": 160.0, "height": 228.0, "weight": 5.513, "case_per_layer": 24, "case_in_stock": 72}], "target_qty": 2}]}
+
+
+10：
+
+{"task_item": [{"sku_info": [{"prt_num": "80812165", "type": "box", "length": 274.0, "width": 160.0, "height": 228.0, "weight": 5.513, "case_per_layer": 24, "case_in_stock": 84}], "target_qty": 3}]}
+
+
+11：
+
+{"task_item": [{"sku_info": [{"prt_num": "80812161", "type": "box", "length": 319.0, "width": 172.0, "height": 197.0, "weight": 5.644, "case_per_layer": 19, "case_in_stock": 87}], "target_qty": 3}]}

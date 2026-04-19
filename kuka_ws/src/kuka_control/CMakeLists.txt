@@ -63,6 +63,7 @@ install(DIRECTORY
 # --- 1. 查找新增的依赖 ---
 find_package(rclcpp_action REQUIRED)
 find_package(kuka_interfaces REQUIRED)
+find_package(palletizing_interfaces REQUIRED)
 
 # --- 2. 编译动作服务端 (Server) ---
 add_executable(palletizing_server src/palletizing_server.cpp)
@@ -74,19 +75,19 @@ ament_target_dependencies(palletizing_server
   # ... (如果你还需要用到 tf2 或其他包，一并加在这里)
 )
 
-# --- 3. 编译动作客户端 (Client) ---
-add_executable(task_manager_client src/task_manager_client.cpp)
-ament_target_dependencies(task_manager_client 
-  rclcpp 
-  rclcpp_action 
+# --- 3. 编译动作客户端 (Client) - 从 brain 系统接入 ---
+add_executable(task_publisher_client src/task_publisher_client.cpp)
+ament_target_dependencies(task_publisher_client
+  rclcpp
+  rclcpp_action
   kuka_interfaces
+  palletizing_interfaces
 )
 
 # --- 4. 安装可执行文件 ---
 install(TARGETS
   palletizing_server
-  task_manager_client
-  # suction_manipulator (你原有的节点)
+  task_publisher_client
   DESTINATION lib/${PROJECT_NAME}
 )
 
