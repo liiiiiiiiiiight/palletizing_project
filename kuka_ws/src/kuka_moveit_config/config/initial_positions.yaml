@@ -1,4 +1,5 @@
 # Default initial positions for assembly_moveit's ros2_control fake system
+# 4DOF home: J4=0, J5=π/2-(J2+J3) = π/2-(-π/2+π/2) = π/2
 
 initial_positions:
   joint1: 0

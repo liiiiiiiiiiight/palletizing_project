@@ -1,4 +1,6 @@
 arm:
   kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
-  kinematics_solver_search_resolution: 0.50000000000000001
-  kinematics_solver_timeout: 0.50000000000000001
+  kinematics_solver_search_resolution: 0.005
+  kinematics_solver_timeout: 0.05
+  # 4DOF优化：J4被动(固定0)，J5动态约束(J5=π/2-(J2+J3))
+  # IK搜索空间大幅缩小，timeout从0.2s降至0.05s

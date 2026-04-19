@@ -3,10 +3,11 @@
     <xacro:macro name="assembly_moveit_ros2_control" params="name initial_positions_file">
         <xacro:property name="initial_positions" value="${load_yaml(initial_positions_file)['initial_positions']}"/>
 
-        <!-- <ros2_control name="${name}" type="system">
-            <hardware> -->
-                <!-- By default, set up controllers for simulation. This won't work on real hardware -->
-                <!-- <plugin>mock_components/GenericSystem</plugin>
+        <ros2_control name="${name}" type="system">
+            <hardware>
+                <plugin>mock_components/GenericSystem</plugin>
+                <param name="mock_sensor_commands">false</param>
+                <param name="state_following_offset">0.0</param>
             </hardware>
             <joint name="joint1">
                 <command_interface name="position"/>
@@ -50,16 +51,18 @@
                 </state_interface>
                 <state_interface name="velocity"/>
             </joint>
+        </ros2_control>
 
-        </ros2_control> -->
+    </xacro:macro>
 
+    <xacro:macro name="assembly_moveit_ros2_control_isaac" params="name">
         <ros2_control name="IsaacSimSystem" type="system">
             <hardware>
                 <plugin>topic_based_ros2_control/TopicBasedSystem</plugin>
                 <param name="joint_commands_topic">/isaac_joint_commands</param>
                 <param name="joint_states_topic">/isaac_joint_states</param>
             </hardware>
-            
+
             <joint name="joint1">
                 <command_interface name="position"/>
                 <state_interface name="position"/>
@@ -91,6 +94,5 @@
                 <state_interface name="velocity"/>
             </joint>
         </ros2_control>
-        
     </xacro:macro>
 </robot>

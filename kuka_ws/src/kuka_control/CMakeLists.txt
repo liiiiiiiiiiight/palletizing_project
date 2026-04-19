@@ -102,4 +102,10 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# 安装测试脚本
+install(DIRECTORY
+  test
+  DESTINATION share/${PROJECT_NAME}
+)
+
 ament_package()
