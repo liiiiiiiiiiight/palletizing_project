@@ -1,5 +1,6 @@
 import os
 from launch import LaunchDescription
+from launch.actions import TimerAction  # 引入 TimerAction 用于延时
 from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 
@@ -32,8 +33,16 @@ def generate_launch_description():
         output="screen",
     )
 
+    # 使用 TimerAction 延迟 10 秒启动后面的节点
+    delayed_nodes = TimerAction(
+        period=10.0,
+        actions=[
+            master_node,
+            task_publisher_client_node
+        ]
+    )
+
     return LaunchDescription([
-        palletizing_server_node,
-        master_node,
-        task_publisher_client_node,
+        palletizing_server_node,  # 立即启动 Server
+        delayed_nodes,            # 10秒后启动其他节点
     ])
